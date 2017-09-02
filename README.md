@@ -1,1 +1,1 @@
-# GATK4_Best_Practice_Nextflow Pipeline
+# GATK4 Best Practice Nextflow Pipeline
