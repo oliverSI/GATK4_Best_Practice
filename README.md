@@ -7,6 +7,7 @@
 
 
 ## Running the pipeline
+There is no need to download the code explicitly. Nextflow seamlessly intergrates with Github with the following command.
   ```
   nextflow run oliverSI/GATK4_Best_Practice --fastq1 read_R1.fastq.gz --fastq2 read_R2.fastq.gz
   ```
