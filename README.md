@@ -40,7 +40,7 @@ GATK4 Best Practice Nextflow Pipeline (v0.1)
 ```
 ## Pipeline parameters
 ```
-../nextflow-0.25.5/nextflow run main.nf --help
+nextflow run oliverSI/GATK4_Best_Practice --help
 ```
 ```
 N E X T F L O W  ~  version 0.25.5
