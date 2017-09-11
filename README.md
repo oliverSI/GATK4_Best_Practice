@@ -1,5 +1,5 @@
 # GATK4 Best Practice Nextflow Pipeline
-**GATK4 Best Practice Nextflow Pipeline** is a bioinformatics pipeline for variant calling based on the GATK best practice.
+**GATK4 Best Practice Nextflow Pipeline** is a variant calling pipeline for human whole genome sequencing based on the GATK best practice.
 
 ## Requirements
 * <a href="https://www.nextflow.io/">NextFlow</a>
