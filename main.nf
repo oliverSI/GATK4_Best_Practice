@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-VERSION="0.1"
+VERSION="0.2"
 
 log.info "===================================================================="
 log.info "GATK4 Best Practice Nextflow Pipeline (v${VERSION})                        "
@@ -181,7 +181,7 @@ process MarkDuplicates {
 	file 'aln-pe_MarkDup.bam' into bam_markdup
 
 	"""
-	/gatk/gatk-launch MarkDuplicates -I $bam_sort -M metrics.txt -O aln-pe_MarkDup.bam	
+	gatk MarkDuplicates -I $bam_sort -M metrics.txt -O aln-pe_MarkDup.bam	
 	"""
 
 }
@@ -204,12 +204,12 @@ process BaseRecalibrator {
 	file 'recal_data.table' into BaseRecalibrator_table
 
 	"""
-	/gatk/gatk-launch BaseRecalibrator \
+	gatk BaseRecalibrator \
 	-I $bam_markdup \
-	-knownSites $dbsnp \
-	-knownSites $golden_indel \
-	 -O recal_data.table \
-	 -R $reference
+	--known-sites $dbsnp \
+	--known-sites $golden_indel \
+	-O recal_data.table \
+	-R $reference
 	"""
 }
 
@@ -226,7 +226,7 @@ process ApplyBQSR {
 	
 	script:
 	"""
-	/gatk/gatk-launch ApplyBQSR -I $bam_markdup -bqsr $BaseRecalibrator_table -O aln-pe_bqsr.bam
+	gatk ApplyBQSR -I $bam_markdup -bqsr $BaseRecalibrator_table -O aln-pe_bqsr.bam
 	"""
 }
 
@@ -245,9 +245,10 @@ process HaplotypeCaller {
 	
 	script:
 	"""
-	/gatk/gatk-launch HaplotypeCaller -I $bam_bqsr -O haplotypecaller.g.vcf --emitRefConfidence GVCF -R $reference
+	gatk HaplotypeCaller -I $bam_bqsr -O haplotypecaller.g.vcf --emit-ref-confidence GVCF -R $reference
 	"""
 }
+
 process GenotypeGVCFs {
 	publishDir "${params.outdir}/HaplotypeCaller"
 	container 'broadinstitute/gatk:latest'
@@ -263,7 +264,7 @@ process GenotypeGVCFs {
 	
 	script:
 	"""
-	/gatk/gatk-launch GenotypeGVCFs --variant haplotypecaller.g.vcf -R $reference -O haplotypecaller.vcf
+	gatk GenotypeGVCFs --variant haplotypecaller.g.vcf -R $reference -O haplotypecaller.vcf
 	"""
 }
 
@@ -294,7 +295,7 @@ process VariantRecalibrator_SNPs {
 
 	script:
 	"""
-	/gatk/gatk-launch VariantRecalibrator \
+	gatk VariantRecalibrator \
 	-V $haplotypecaller_vcf \
  	-R $reference \
 	-resource hapmap,known=false,training=true,truth=true,prior=15.0:./$hapmap \
@@ -310,9 +311,9 @@ process VariantRecalibrator_SNPs {
     	-an ReadPosRankSum \
     	-mode SNP \
     	-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 \
-	--maxGaussians 8 \
+	--max-gaussians 8 \
     	-O recalibrate_SNP.recal \
-    	-tranchesFile recalibrate_SNP.tranches \
+    	--tranches-file recalibrate_SNP.tranches \
 	"""
 }
 
@@ -333,10 +334,10 @@ process ApplyVQSR_SNPs {
 	
 	script:
 	"""
-	/gatk/gatk-launch ApplyVQSR \
+	gatk ApplyVQSR \
 	-V $haplotypecaller_vcf \
 	--recal_file $variantrecalibrator_recal \
-	-tranchesFile $variantrecalibrator_tranches \
+	--tranches-file $variantrecalibrator_tranches \
 	-mode SNP \
 	--ts_filter_level 99.0 \
 	-O recalibrated_snps_raw_indels.vcf 
@@ -366,7 +367,7 @@ process VariantRecalibrator_INDELs {
 	
 	script:
 	"""
-	/gatk/gatk-launch VariantRecalibrator \
+	gatk VariantRecalibrator \
 	-V $recalibrated_snps_raw_indels \
  	-R $reference \
 	--resource mills,known=false,training=true,truth=true,prior=12.0:./$golden_indel \
@@ -379,9 +380,9 @@ process VariantRecalibrator_INDELs {
     	-an ReadPosRankSum \
     	-mode INDEL \
     	-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 \
-	--maxGaussians 4 \
+	--max-gaussians 4 \
     	-O recalibrate_INDEL.recal \
-    	-tranchesFile recalibrate_INDEL.tranches \
+    	--tranches-file recalibrate_INDEL.tranches \
 	"""
 }
 
@@ -400,10 +401,10 @@ process ApplyVQSR_INDELs {
 	
 	script:
 	"""
-	/gatk/gatk-launch ApplyVQSR \
+	gatk ApplyVQSR \
 	-V $recalibrated_snps_raw_indels \
 	--recal_file $variantrecalibrator_indel_recal \
-	-tranchesFile $variantrecalibrator_indel_tranches \
+	--tranches-file $variantrecalibrator_indel_tranches \
 	-mode INDEL \
 	--ts_filter_level 99.0 \
 	-O recalibrated_variants.vcf
