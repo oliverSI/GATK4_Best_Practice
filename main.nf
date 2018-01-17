@@ -336,10 +336,10 @@ process ApplyVQSR_SNPs {
 	"""
 	gatk ApplyVQSR \
 	-V $haplotypecaller_vcf \
-	--recal_file $variantrecalibrator_recal \
+	--recal-file $variantrecalibrator_recal \
 	--tranches-file $variantrecalibrator_tranches \
 	-mode SNP \
-	--ts_filter_level 99.0 \
+	-ts-filter-level 99.0 \
 	-O recalibrated_snps_raw_indels.vcf 
 	"""
 }
@@ -403,10 +403,10 @@ process ApplyVQSR_INDELs {
 	"""
 	gatk ApplyVQSR \
 	-V $recalibrated_snps_raw_indels \
-	--recal_file $variantrecalibrator_indel_recal \
+	--recal-file $variantrecalibrator_indel_recal \
 	--tranches-file $variantrecalibrator_indel_tranches \
 	-mode INDEL \
-	--ts_filter_level 99.0 \
+	-ts-filter-level 99.0 \
 	-O recalibrated_variants.vcf
 	"""
 }
