@@ -1,5 +1,5 @@
 # GATK4 Best Practice Nextflow Pipeline
-**GATK4 Best Practice Nextflow Pipeline** is a variant calling pipeline for human whole genome sequencing based on the GATK best practice.
+**GATK4 Best Practice Nextflow Pipeline** is a variant calling pipeline for human whole genome sequencing based on the [GATK best practice](https://software.broadinstitute.org/gatk/best-practices/workflow).
 
 ## Requirements
 * <a href="https://www.nextflow.io/">NextFlow</a>
@@ -38,6 +38,8 @@ GATK4 Best Practice Nextflow Pipeline (v0.1)
 [29/98dfcd] Submitted process > ApplyVQSR_INDELs
 [3b/7de781] Submitted process > copy
 ```
+Reference sequences(GRCh37/hg19) are automatically imported form [Docker Hub](https://hub.docker.com/r/oliversi/hg19/).
+
 ## Pipeline parameters
 ```
 nextflow run oliverSI/GATK4_Best_Practice --help
